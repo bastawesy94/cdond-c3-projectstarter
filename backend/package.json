@@ -41,7 +41,7 @@
     "@nestjs/platform-express": "9.2.0",
     "@nestjs/swagger": "6.1.3",
     "@nestjs/typeorm": "9.0.1",
-    "@types/jsonwebtoken": "9.5.9",
+    "@types/jsonwebtoken": "8.5.9",
     "@types/winston": "^2.4.4",
     "class-transformer": "^0.2.3",
     "class-validator": "0.13.2",
