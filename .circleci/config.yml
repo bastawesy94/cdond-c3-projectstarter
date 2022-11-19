@@ -14,7 +14,7 @@ jobs:
             cd frontend
             npm install
             npm run build
-            npm audit fix --force
+            # npm audit fix
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
@@ -75,9 +75,8 @@ jobs:
             cd frontend
             npm install
             npm install oauth-sign@^0.9.0
-            npm audit fix --audit-level=critical --force  
             npm audit --audit-level=critical
-            npm audit fix
+            npm audit fix --force  
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -90,9 +89,8 @@ jobs:
           command: |
             cd backend
             npm install
-            npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-            npm audit fix
+            npm audit fix --force  
 workflows:
   default:
     jobs:
