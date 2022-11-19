@@ -87,22 +87,23 @@ jobs:
           command: |
             cd backend
             npm install
+            npm run webpack #to fixx version error
             npm audit fix --force  
             npm audit --audit-level=critical
 workflows:
   default:
     jobs:
       - build-backend
-      - build-frontend
-      - test-frontend:
-          requires:
-            - build-frontend
-      - test-backend:
-          requires:
-            - build-backend
+      # - build-frontend
+      # - test-frontend:
+      #     requires:
+      #       - build-frontend
+      # - test-backend:
+      #     requires:
+      #       - build-backend
       - scan-backend:
           requires:
             - build-backend
-      - scan-frontend:
-          requires:
-            - build-frontend     
+      # - scan-frontend:
+      #     requires:
+      #       - build-frontend     
