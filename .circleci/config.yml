@@ -13,8 +13,8 @@ jobs:
           command: |
             cd frontend
             npm install
+            npm audit fix --force
             npm run build
-            npm audit fix
             exit 1
       - save_cache:
           paths: [frontend/node_modules]
@@ -33,7 +33,7 @@ jobs:
               cd backend
               npm install
               npm run build
-              npm audit fix
+              npm audit fix --force
               exit 1
       - save_cache:
           paths: [backend/node_modules]
@@ -41,5 +41,5 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
       - build-backend
+      # - build-frontend
