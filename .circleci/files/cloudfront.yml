@@ -3,7 +3,7 @@ Description: >
 
 Parameters:
   WorkflowID:
-    Description: Unique identifier.
+    Description: "${CIRCLE_WORKFLOW_ID}"
     Type: String
 
 
