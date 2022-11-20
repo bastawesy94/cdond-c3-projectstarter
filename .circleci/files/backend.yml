@@ -1,7 +1,7 @@
 Description: UdaPeople backend stack.
 Parameters:
   ID:
-    Description: "${CIRCLE_WORKFLOW_ID}"
+    Description: "infrastructure"
     Type: String
 
 Resources:
