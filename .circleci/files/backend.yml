@@ -1,8 +1,8 @@
 Description: UdaPeople backend stack.
-Parameters:
-  ID:
-    Description: backend infrastructure
-    Type: String
+# Parameters:
+#   ID:
+#     Description: backend infrastructure
+#     Type: String
 
 Resources:
   InstanceSecurityGroup:
@@ -30,4 +30,4 @@ Resources:
       ImageId: "ami-02b509fb28354de85" 
       Tags:
         - Key: Name
-          Value: !Sub backend-${ID}
+          Value: !Sub backend
