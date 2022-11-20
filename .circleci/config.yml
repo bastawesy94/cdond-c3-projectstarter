@@ -132,8 +132,8 @@ jobs:
       - run:
           name: Ensure back-end infrastructure exists
           command: |
-           npm install tar
-           npm i gzip
+           yum -y install tar
+           yum -y install  gzip
       - run:
           name: Ensure back-end infrastructure exists
           command: |
