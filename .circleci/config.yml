@@ -208,9 +208,9 @@ workflows:
       #     requires:
       #       - scan-backend
       #       - scan-frontend
-      # - deploy-infrastructure:
-      #     requires: 
-      #      - notify
-      - configure-infrastructure       
-            # requires: 
-            #   - deploy-infrastructure
+      - deploy-infrastructure:
+          requires: 
+           - notify
+      - configure-infrastructure:       
+            requires: 
+              - deploy-infrastructure
