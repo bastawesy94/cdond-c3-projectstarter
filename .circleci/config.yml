@@ -300,15 +300,15 @@ workflows:
       #     requires:
       #       - scan-backend
       #       - scan-frontend
-      - deploy-infrastructure
-          # requires: 
-          #  - notify
-      # - configure-infrastructure:
-      #       requires: 
-      #         - deploy-infrastructure
-      - run-migrations
-          # requires:
-          #   - configure-infrastructure
+      - deploy-infrastructure:
+          requires: 
+           - notify
+      - configure-infrastructure:
+            requires: 
+              - deploy-infrastructure
+      - run-migrations:
+          requires:
+            - configure-infrastructure
       - deploy-frontend:
           requires:
             - run-migrations
