@@ -221,7 +221,7 @@ jobs:
           name: Install dependencies
           command: |
             apk update
-            apk upgrae
+            apk upgrade
             apk add curl
       - run:
           name: Get backend url
