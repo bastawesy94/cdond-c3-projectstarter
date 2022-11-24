@@ -224,7 +224,6 @@ jobs:
             apk upgrade
             apk add curl
             pip install awscli
-            ansible --version
             aws --version
       - run:
           name: Get backend url
