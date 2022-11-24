@@ -271,10 +271,8 @@ jobs:
               cd .circleci/ansible
               echo "Contents  of the inventory.txt file is -------"
               cat inventory.txt
+              echo "after inventory priiiiint"
               ansible-playbook -i inventory.txt deploy-backend.yml
-              npm install
-              pm2 stop default
-              pm2 start npm -- start
               # Here's where you will add some code to rollback on failure              
 workflows:
   default:
@@ -298,18 +296,18 @@ workflows:
       #     requires:
       #       - scan-backend
       #       - scan-frontend
-      # - deploy-infrastructure
+      - deploy-infrastructure
           # requires: 
           #  - notify
-      # - configure-infrastructure:
-      #       requires: 
-      #         - deploy-infrastructure
+      - configure-infrastructure:
+            requires: 
+              - deploy-infrastructure
       # - run-migrations:
           # requires:
           #   - deploy-infrastructure
       # - deploy-frontend:
       #     requires:
       #       - deploy-infrastructure
-      - deploy-backend
-          # requires:
-          #   - deploy-infrastructure      
+      - deploy-backend:
+          requires:
+            - deploy-infrastructure      
