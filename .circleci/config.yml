@@ -208,6 +208,33 @@ jobs:
       #       # Your code here
       #       exit 1
      # Here's where you will add some code to rollback on failure                    
+  deploy-frontend:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - attach_workspace:
+          at: ~/
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       # your code here
+      - run:
+          name: Get backend url
+          command: |
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> .circleci/ansible/inventory.txt)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm install
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      - destroy-environment      
                   
 workflows:
   default:
@@ -234,9 +261,10 @@ workflows:
       - deploy-infrastructure
           # requires: 
           #  - notify
-      - configure-infrastructure:
-            requires: 
-              - deploy-infrastructure
-      - run-migrations:
-          requires:
-            - deploy-infrastructure
+      # - configure-infrastructure:
+      #       requires: 
+      #         - deploy-infrastructure
+      # - run-migrations:
+          # requires:
+          #   - deploy-infrastructure
+      - deploy-frontend
