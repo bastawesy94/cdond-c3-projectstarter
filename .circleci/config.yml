@@ -216,7 +216,7 @@ jobs:
     docker:
         - image: python:3.7-alpine3.11 
     steps:
-      - run: sleep 50;   
+      # - run: sleep 50;   
       - checkout
       - run:
           name: Install dependencies
