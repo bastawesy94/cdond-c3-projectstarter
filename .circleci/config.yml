@@ -220,9 +220,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo pkg update
-            sudo pkg upgrae
-            sudo pkg install curl
+            pkg update
+            pkg upgrae
+            pkg install curl
       - run:
           name: Get backend url
           command: |
