@@ -223,9 +223,13 @@ jobs:
             apk update
             apk upgrade
             apk add curl
+            pip install awscli
+            ansible --version
+            aws --version
       - run:
           name: Get backend url
           command: |
+            BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
       - run:
@@ -338,22 +342,22 @@ workflows:
       #     requires:
       #       - scan-backend
       #       - scan-frontend
-      - deploy-infrastructure
+      # - deploy-infrastructure
           # requires: 
           #  - notify
-      - configure-infrastructure:
-            requires: 
-              - deploy-infrastructure
-      - run-migrations:
-          requires:
-            - configure-infrastructure
-      - deploy-frontend:
-          requires:
-            - run-migrations
-      - deploy-backend:
-          requires:
-            - run-migrations
-      - smoke-test:
-          requires:
-            - deploy-backend
-            - deploy-frontend
+      # - configure-infrastructure:
+      #       requires: 
+      #         - deploy-infrastructure
+      # - run-migrations:
+      #     requires:
+      #       - configure-infrastructure
+      # - deploy-frontend:
+      #     requires:
+      #       - run-migrations
+      # - deploy-backend:
+      #     requires:
+      #       - run-migrations
+      - smoke-test
+          # requires:
+          #   - deploy-backend
+          #   - deploy-frontend
