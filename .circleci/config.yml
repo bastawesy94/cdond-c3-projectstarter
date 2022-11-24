@@ -211,7 +211,38 @@ jobs:
                   curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
                   curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/migration_${CIRCLE_WORKFLOW_ID:0:7}
               fi
-    #  Here's where you will add some code to rollback on failure                    
+      - destroy-environment
+  smoke-test:
+    docker:
+        - image: python:3.7-alpine3.11 
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            sudo pkg update
+            sudo pkg upgrae
+            sudo pkg install curl
+      - run:
+          name: Get backend url
+          command: |
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+      - run:
+          name: Backend smoke test.
+          command: |
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+                return 0
+            else
+                return 1
+            fi
+      # - run:
+      #     name: Frontend smoke test.
+      #     command: |
+      #       # your code here
+      - destroy-environment  
+                    
   deploy-frontend:
     docker:
       - image: amazon/aws-cli
@@ -300,18 +331,19 @@ workflows:
       #     requires:
       #       - scan-backend
       #       - scan-frontend
-      - deploy-infrastructure
+      # - deploy-infrastructure
           # requires: 
           #  - notify
-      - configure-infrastructure:
-            requires: 
-              - deploy-infrastructure
-      - run-migrations:
-          requires:
-            - configure-infrastructure
-      - deploy-frontend:
-          requires:
-            - run-migrations
-      - deploy-backend:
-          requires:
-            - run-migrations      
+      # - configure-infrastructure:
+      #       requires: 
+      #         - deploy-infrastructure
+      # - run-migrations:
+      #     requires:
+      #       - configure-infrastructure
+      # - deploy-frontend:
+      #     requires:
+      #       - run-migrations
+      # - deploy-backend:
+      #     requires:
+      #       - run-migrations
+      - smoke-test      
