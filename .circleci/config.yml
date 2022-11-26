@@ -405,13 +405,12 @@ jobs:
               echo "OldWorkflowID: ${OldWorkflowID}"
               export CODE=${OldWorkflowID:10}
               echo ${CODE}
-              # aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-              # aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-              # aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${CODE}"
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${CODE}"
               BUCKET_ID="udapeople-${OldWorkflowID}"
               # aws s3api delete-bucket --bucket udapeople-e91f312
               
-              aws s3 rm s3://udapeople-e91f312 --recursive
+              aws s3 rm "s3://${BUCKET_ID}" --recursive
             else
               echo "###########  ==> clean up is faild "
             fi
