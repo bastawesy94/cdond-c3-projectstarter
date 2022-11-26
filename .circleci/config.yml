@@ -3,13 +3,39 @@ version: 2.1
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      workflow_id:
+        type: string   
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
+            echo "Destroying environment: << parameters.workflow_id >> "
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}}
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}}
+
+  revert-migrations:
+    description: Revert the last migration
+    parameters:
+        workflow_id:
+            default: "${CIRCLE_WORKFLOW_ID:0:7}"
+            type: string      
+    steps:
+        - run:
+            name: Revert migrations
+            when: on_fail
+            command: |
+                # Example: kvdb.io
+                export SUCCESS=$(curl --insecure  https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/migration_<< parameters.workflow_id >>)
+                echo "$SUCCESS"
+                # Logic for reverting the database state
+                if (( $SUCCESS == 1 ));
+                then
+                    cd ~/project/backend
+                    npm install
+                    npm run migration:revert
+                fi              
 orbs:
   slack: circleci/slack@4.10.1
 
@@ -216,7 +242,7 @@ jobs:
     docker:
         - image: python:3.7-alpine3.11 
     steps:
-      # - run: sleep 50;   
+      - run: sleep 30;  #sleep 30 after deploy
       - checkout
       - run:
           name: Install dependencies
@@ -240,7 +266,7 @@ jobs:
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
             then
-                return 0
+                return 1
             else
                 return 1
             fi
@@ -255,7 +281,8 @@ jobs:
             else
               return 1
             fi
-      - destroy-environment  
+      - destroy-environment
+      - revert-migrations 
                     
   deploy-frontend:
     docker:
@@ -322,7 +349,7 @@ jobs:
               cat inventory.txt
               echo "after inventory priiiiint"
               ansible-playbook -i inventory.txt deploy-backend.yml
-              # Here's where you will add some code to rollback on failure              
+        - destroy-environment              
 workflows:
   default:
     jobs:
