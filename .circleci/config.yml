@@ -247,7 +247,6 @@ jobs:
     docker:
         - image: python:3.7-alpine3.11 
     steps:
-      - run: sleep 30;  #sleep 30 after deploy
       - checkout
       - run:
           name: Install dependencies
@@ -257,6 +256,7 @@ jobs:
             apk add curl
             pip install awscli
             aws --version
+      - run: sleep 60;  #sleep 60 after deploy
       - run:
           name: Get backend url
           command: |
