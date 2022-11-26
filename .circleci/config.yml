@@ -372,7 +372,7 @@ jobs:
             cd backend
             echo "${CIRCLE_WORKFLOW_ID:0:7}" > OLD-ID.txt
             cat OLD-ID.txt
-            - save_cache:
+            save_cache:
               paths: [backend/OLD-ID.txt]
               key: OLD-ID
             cd ../
