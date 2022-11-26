@@ -410,7 +410,7 @@ jobs:
               export BUCKET_ID="udapeople-${OldWorkflowID}"
               # aws s3api delete-bucket --bucket udapeople-e91f312
               
-              # aws s3 rm "s3://${BUCKET_ID}" --recursive
+              aws s3 rm "s3://${BUCKET_ID}" --recursive
             else
               echo "###########  ==> clean up is faild "
             fi
