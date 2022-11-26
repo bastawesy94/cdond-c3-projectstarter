@@ -429,6 +429,11 @@ workflows:
       #     requires:
       #       - scan-backend
       #       - scan-frontend
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+          
       - deploy-infrastructure
           # requires: 
           #  - notify
