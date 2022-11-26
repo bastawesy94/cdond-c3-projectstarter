@@ -403,9 +403,11 @@ jobs:
                     list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                     --no-paginate --output text)
               echo "OldWorkflowID: ${OldWorkflowID}"
+              aws s3 rm "s3://${OldWorkflowID}" --recursive
+              export CODE = tmp=${OldWorkflowID#*_}
+              echo ${CODE}
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-              aws s3 rm "s3://${OldWorkflowID}" --recursive
             else
               echo "###########  ==> clean up is faild "
             fi
