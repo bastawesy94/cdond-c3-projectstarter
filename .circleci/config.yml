@@ -386,9 +386,8 @@ jobs:
           command: |
             export PREV=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID)
             echo "${PREV}"
-            if ["$PREV" == "Not Found"]
-            then
-               export PREV=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}")
+            if ["$PREV" == "Not Found"];then
+               curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}"
             else
               echo "SKIP THIS STEP."
             fi     
@@ -411,7 +410,7 @@ jobs:
           command: |
             export PREV_WORKFLOW_ID=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID)
             echo PREV_WORKFLOW_ID : "${PREV_WORKFLOW_ID}"
-            if [[ "${PREV_WORKFLOW_ID}" != "${OldWorkflowID}" ]]
+            if [ "$PREV_WORKFLOW_ID" != "$OldWorkflowID" ]
             then
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${PREV_WORKFLOW_ID}"
               aws cloudformation delete-stack --stack-name "udapeople-backend-${PREV_WORKFLOW_ID}"
@@ -450,32 +449,32 @@ workflows:
       #         only:
       #           - master
           
-      - deploy-infrastructure
+      # - deploy-infrastructure
           # requires: 
           #  - notify
-      - configure-infrastructure:
-            requires: 
-              - deploy-infrastructure
-      - run-migrations:
-          requires:
-            - configure-infrastructure
-      - deploy-frontend:
-          requires:
-            - run-migrations
-      - deploy-backend:
-          requires:
-            - run-migrations
+      # - configure-infrastructure:
+      #       requires: 
+      #         - deploy-infrastructure
+      # - run-migrations:
+      #     requires:
+      #       - configure-infrastructure
+      # - deploy-frontend:
+      #     requires:
+      #       - run-migrations
+      # - deploy-backend:
+      #     requires:
+      #       - run-migrations
       # - smoke-test:
       #     requires:
       #       - deploy-backend
       #       - deploy-frontend
-      - cloudfront-update:
+      # - cloudfront-update:
           # requires:
           #   - smoke-test
-              requires:
-                - deploy-backend
-                - deploy-frontend
+              # requires:
+              #   - deploy-backend
+              #   - deploy-frontend
 
-      - cleanup:
-          requires:
-            - cloudfront-update       
+      - cleanup
+          # requires:
+          #   - cloudfront-update       
