@@ -411,7 +411,7 @@ jobs:
           command: |
             export PREV_WORKFLOW_ID=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID)
             echo PREV_WORKFLOW_ID : "${PREV_WORKFLOW_ID}"
-            if  "$PREV_WORKFLOW_ID" == "$OldWorkflowID" ]]
+            if  [ "$PREV_WORKFLOW_ID" == "$OldWorkflowID" ]
             then
               echo "###########  ==> clean up is skipped, this is the first time to build stacks "
             else
