@@ -382,6 +382,17 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Set initial value of previous workflow
+          command: |
+            export PREV=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID)
+            echo "${PREV}"
+            if [${PREV} == "Not Found"];
+            then
+               export PREV=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}")
+            else
+              echo "SKIP THIS STEP."   
+
+      - run:
           name: Get old stack workflow id
           command: |
             # Fetch the Old workflow ID
@@ -407,11 +418,9 @@ jobs:
               echo ${BUCKET}
               aws s3 rm "s3://${BUCKET}" --recursive
               curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}"
-              curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}"
             else
               echo "###########  ==> clean up is faild "
-            fi
-    
+            fi    
                           
 workflows:
   default:
