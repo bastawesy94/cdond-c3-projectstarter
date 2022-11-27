@@ -390,7 +390,8 @@ jobs:
             then
                export PREV=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}")
             else
-              echo "SKIP THIS STEP."   
+              echo "SKIP THIS STEP."
+            fi     
 
       - run:
           name: Get old stack workflow id
