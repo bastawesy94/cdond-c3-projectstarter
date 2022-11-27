@@ -369,6 +369,9 @@ jobs:
           name: Update cloudfront distribution
             # Change the initial stack name, as applicable to you
           command: |
+            #SET PREV_WORKFLOW_ID BEFORE OVERWRITE WorkflowID 
+            export PREV=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}")
+            echo "${PREV}"
               aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name InitialStack \
@@ -381,17 +384,17 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run:
-          name: Set initial value of previous workflow
-          command: |
-            export PREV=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID)
-            echo "${PREV}"
-            if [ "$PREV" == "Not Found" ]
-            then
-               curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}"
-            else
-              echo "SKIP THIS STEP."
-            fi     
+      # - run:
+      #     name: Set initial value of previous workflow
+      #     command: |
+      #       export PREV=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID)
+      #       echo "${PREV}"
+      #       if [ "$PREV" == "Not Found" ]
+      #       then
+      #          curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}"
+      #       else
+      #         echo "SKIP THIS STEP."
+      #       fi     
 
       - run:
           name: Get old stack workflow id
@@ -411,16 +414,16 @@ jobs:
           command: |
             export PREV_WORKFLOW_ID=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID)
             echo PREV_WORKFLOW_ID : "${PREV_WORKFLOW_ID}"
-            if  [ "$PREV_WORKFLOW_ID" == "$OldWorkflowID" ]
+            if  [ "$PREV_WORKFLOW_ID" != "$OldWorkflowID" ]
             then
-              echo "###########  ==> clean up is skipped, this is the first time to build stacks "
-            else
-              aws cloudformation delete-stack --stack-name "udapeople-frontend-${PREV_WORKFLOW_ID}"
-              aws cloudformation delete-stack --stack-name "udapeople-backend-${PREV_WORKFLOW_ID}"
+              ech "tamammmmmm"
+              # aws cloudformation delete-stack --stack-name "udapeople-frontend-${PREV_WORKFLOW_ID}"
+              # aws cloudformation delete-stack --stack-name "udapeople-backend-${PREV_WORKFLOW_ID}"
               export BUCKET="udapeople-${PREV_WORKFLOW_ID}"
               echo ${BUCKET}
-              aws s3 rm "s3://${BUCKET}" --recursive
-              curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}"
+              # aws s3 rm "s3://${BUCKET}" --recursive
+            else
+              echo "###########  ==> clean up is skipped, this is the first time to build stacks "
             fi    
                           
 workflows:
