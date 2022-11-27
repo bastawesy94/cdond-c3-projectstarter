@@ -369,7 +369,6 @@ jobs:
           name: Update cloudfront distribution
             # Change the initial stack name, as applicable to you
           command: |
-              curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}"
               aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name InitialStack \
@@ -407,6 +406,7 @@ jobs:
               export BUCKET = "udapeople-${PREV_WORKFLOW_ID}"
               echo ${BUCKET}
               aws s3 rm "s3://${BUCKET}" --recursive
+              curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}"
               curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}"
             else
               echo "###########  ==> clean up is faild "
