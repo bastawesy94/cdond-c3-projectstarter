@@ -369,8 +369,12 @@ jobs:
           name: Update cloudfront distribution
             # Change the initial stack name, as applicable to you
           command: |
-            #SET PREV_WORKFLOW_ID BEFORE OVERWRITE WorkflowID 
-            export PREV=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}")
+            #SET PREV_WORKFLOW_ID BEFORE OVERWRITE WorkflowID
+            # Fetch the Old workflow ID
+            export OldWorkflowID=$(aws cloudformation \
+                    list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                    --no-paginate --output text) 
+            curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${OldWorkflowID}"
             echo "${PREV}"
               aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
@@ -399,16 +403,9 @@ jobs:
       - run:
           name: Get old stack workflow id
           command: |
-            # Fetch the Old workflow ID
-            export OldWorkflowID=$(aws cloudformation \
-                    list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-                    --no-paginate --output text)
-            echo OldWorkflowID: "${OldWorkflowID}"
-            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
-            # Fetch the stack names          
-            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-                    --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-            echo Stack names: "${STACKS[@]}"          
+            ##### get prev stack id #######
+            export PREV=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID)
+            echo "${PREV}"          
       - run:
           name: Remove old stacks and files
           command: |
@@ -416,12 +413,11 @@ jobs:
             echo PREV_WORKFLOW_ID : "${PREV_WORKFLOW_ID}"
             if  [ "$PREV_WORKFLOW_ID" != "$OldWorkflowID" ]
             then
-              echo "tamammmmmm"
-              # aws cloudformation delete-stack --stack-name "udapeople-frontend-${PREV_WORKFLOW_ID}"
-              # aws cloudformation delete-stack --stack-name "udapeople-backend-${PREV_WORKFLOW_ID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${PREV_WORKFLOW_ID}"
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${PREV_WORKFLOW_ID}"
               export BUCKET="udapeople-${PREV_WORKFLOW_ID}"
               echo ${BUCKET}
-              # aws s3 rm "s3://${BUCKET}" --recursive
+              aws s3 rm "s3://${BUCKET}" --recursive
             else
               echo "###########  ==> clean up is skipped, this is the first time to build stacks "
             fi    
@@ -453,32 +449,32 @@ workflows:
       #         only:
       #           - master
           
-      # - deploy-infrastructure
+      - deploy-infrastructure
           # requires: 
           #  - notify
-      # - configure-infrastructure:
-      #       requires: 
-      #         - deploy-infrastructure
-      # - run-migrations:
-      #     requires:
-      #       - configure-infrastructure
-      # - deploy-frontend:
-      #     requires:
-      #       - run-migrations
-      # - deploy-backend:
-      #     requires:
-      #       - run-migrations
+      - configure-infrastructure:
+            requires: 
+              - deploy-infrastructure
+      - run-migrations:
+          requires:
+            - configure-infrastructure
+      - deploy-frontend:
+          requires:
+            - run-migrations
+      - deploy-backend:
+          requires:
+            - run-migrations
       # - smoke-test:
       #     requires:
       #       - deploy-backend
       #       - deploy-frontend
-      # - cloudfront-update:
+      - cloudfront-update:
           # requires:
           #   - smoke-test
-              # requires:
-              #   - deploy-backend
-              #   - deploy-frontend
+              requires:
+                - deploy-backend
+                - deploy-frontend
 
-      - cleanup
-          # requires:
-          #   - cloudfront-update       
+      - cleanup:
+          requires:
+            - cloudfront-update       
