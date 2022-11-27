@@ -411,7 +411,7 @@ jobs:
           command: |
             export PREV_WORKFLOW_ID=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID)
             echo PREV_WORKFLOW_ID : "${PREV_WORKFLOW_ID}"
-            if [ "$PREV_WORKFLOW_ID" != "$OldWorkflowID" ]
+            if [[ "${PREV_WORKFLOW_ID}" != "${OldWorkflowID}" ]]
             then
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${PREV_WORKFLOW_ID}"
               aws cloudformation delete-stack --stack-name "udapeople-backend-${PREV_WORKFLOW_ID}"
