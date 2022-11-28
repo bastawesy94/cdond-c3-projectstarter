@@ -32,7 +32,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 9093
           ToPort: 9093
-          CidrIp: 0.0.0.0/0
+          CidrIp: 0.0.0.0/0  
 
   EC2Instance:
     Type: AWS::EC2::Instance

@@ -389,18 +389,6 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      # - run:
-      #     name: Set initial value of previous workflow
-      #     command: |
-      #       export PREV=$(curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID)
-      #       echo "${PREV}"
-      #       if [ "$PREV" == "Not Found" ]
-      #       then
-      #          curl --insecure https://kvdb.io/9VEuowm1s2ik3wC3fMHC2q/PREV_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}"
-      #       else
-      #         echo "SKIP THIS STEP."
-      #       fi     
-
       - run:
           name: Get old stack workflow id
           command: |
@@ -426,33 +414,33 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-backend
-      # - build-frontend
-      # - test-frontend:
-      #     requires:
-      #       - build-frontend
-      # - test-backend:
-      #     requires:
-      #       - build-backend
-      # - scan-backend:
-      #     requires:
-      #       - build-backend
-      # - scan-frontend:
-      #     requires:
-      #       - build-frontend
-      # - notify:
-      #     context: slack-secrets
-      #     requires:
-      #       - scan-backend
-      #       - scan-frontend
-          # filters:
-          #   branches:
-          #     only:
-          #       - master
+      - build-backend
+      - build-frontend
+      - test-frontend:
+          requires:
+            - build-frontend
+      - test-backend:
+          requires:
+            - build-backend
+      - scan-backend:
+          requires:
+            - build-backend
+      - scan-frontend:
+          requires:
+            - build-frontend
+      - notify:
+          context: slack-secrets
+          requires:
+            - scan-backend
+            - scan-frontend
+          filters:
+            branches:
+              only:
+                - master
 
-      - deploy-infrastructure
-          # requires: 
-          #  - notify
+      - deploy-infrastructure:
+          requires: 
+           - notify
       - configure-infrastructure:
             requires: 
               - deploy-infrastructure
@@ -465,17 +453,13 @@ workflows:
       - deploy-backend:
           requires:
             - run-migrations
-      # - smoke-test:
-      #     requires:
-      #       - deploy-backend
-      #       - deploy-frontend
+      - smoke-test:
+          requires:
+            - deploy-backend
+            - deploy-frontend
       - cloudfront-update:
-          # requires:
-            # - smoke-test
-              requires:
-                - deploy-backend
-                - deploy-frontend
-
+          requires:
+            - smoke-test
       - cleanup:
           requires:
             - cloudfront-update       
